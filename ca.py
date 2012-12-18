@@ -4,10 +4,10 @@ from scipy import stats
 
 class CorrespondenceAnalysis:
 
-    def __init__(self):
+    def __init__(self, ct=0, rt=0, cit=0, rit=0):
         self.min        = 0.00000001
         self.N          = 0
-        self.Z2         = 0
+        self.Z          = 0
         self.Chi2Stat   = 0
         self.dof        = 0
         self.pval       = 1.0
@@ -27,29 +27,42 @@ class CorrespondenceAnalysis:
         self.idxC       = 0
         self.idxR       = 0
 
+        self.setThresholds(ct,rt,cit,rit)
+
     def setThresholds(self, ct=0, rt=0, cit=0, rit=0):
         self.ct     = ct
         self.cit    = cit
         self.rt     = rt
         self.rit    = rit
 
-    def chiSqScores(self, mat):
-
+    def filter(self, mat):
         d = np.array(mat, dtype=np.float32)
 
+        # first filter Rows
+        di = np.zeros(shape=d.shape, dtype=np.int32)
+        di[d > 0.0] = 1
         R = np.sum(d, 1)
-        C = np.sum(d, 0)
-
-        di = d
-        di[d > 0.0] = 1.0
-
         RI = np.sum(di, 1)
-        CI = np.sum(di, 0)
 
-        self.idxC = np.logical_and(C > self.ct, CI > self.cit)
         self.idxR = np.logical_and(R > self.rt, RI > self.rit)
 
-        d = np.array(mat[np.ix_(self.idxR,self.idxC)], dtype=np.float32)
+        # now filter Columns
+        dR = d[self.idxR, :]
+        diR = di[self.idxR, :]
+        C = np.sum(dR, 0)
+        CI = np.sum(diR, 0)
+
+        self.idxC = np.logical_and(C > self.ct, CI > self.cit)
+
+        d = dR[:, self.idxC]
+
+        return d
+
+    def chiSqScores(self, mat):
+        if (self.ct + self.rt + self.cit + self.rit > 0):
+            d = self.filter(mat)
+        else:
+            d = np.array(mat, dtype=np.float32)
 
         N = np.sum(d)
         Z = d / N
@@ -67,15 +80,15 @@ class CorrespondenceAnalysis:
                 Z[iy,ix] = ( Z[iy,ix] - (self.r[iy] * self.c[ix]) ) * (r_mH[iy] * c_mH[ix])
 
         self.N = N
-        self.Z2 = np.power(Z, 2)
-        self.Chi2Stat = np.sum(self.Z2) * N
+        self.Z = Z
+        Z2 = np.power(Z, 2)
+        self.Chi2Stat = np.sum(Z2) * N
         self.pval = sp.stats.chi2.sf(self.Chi2Stat, self.dof)
-
-        return Z
 
     def analyze(self, mat):
 
-        M = self.chiSqScores(mat)
+        self.chiSqScores(mat)
+        M = self.Z
 
         self.P, self.S, self.Q = np.linalg.svd(M, False)
         self.Q = np.transpose(self.Q)
@@ -92,7 +105,8 @@ class CorrespondenceAnalysis:
 
     def analyzeCols(self, mat):
 
-        M = self.chiSqScores(mat)
+        self.chiSqScores(mat)
+        M = self.Z
 
         self.P = 0
         _M = np.transpose(M)
@@ -112,7 +126,8 @@ class CorrespondenceAnalysis:
 
     def analyzeRows(self, mat):
 
-        M = self.chiSqScores(mat)
+        self.chiSqScores(mat)
+        M = self.Z
 
         self.Q = 0
         _M = np.transpose(M)
