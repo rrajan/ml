@@ -20,13 +20,16 @@ class CAPlot:
             plt.figure(i+1)
             plt.plot(x, y, marker)
 
-            if (len(labels) > 0 and len(labels) == len(x)):
-                for i, l in enumerate(labels):
-                    plt.annotate(labels[i], xy=(x[i], y[i]))
-            else:
-                print "plot: error in len(labels)"
+            if (len(labels) > 0):
+                if (len(labels) == len(x)):
+                    for i, l in enumerate(labels):
+                        plt.annotate(labels[i], xy=(x[i], y[i]))
+                else:
+                    print "plot: error in len(labels)"
 
-            plt.title(title + " factor " + `f`)
+            plt.xlabel("factor " + `f + 1`)
+            plt.ylabel("factor " + `f + 2`)
+            plt.title(title)
 
         plt.grid(True)
         if (show):
