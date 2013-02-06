@@ -36,7 +36,7 @@ class CorrespondenceAnalysis:
         self.rit    = rit
 
     def filter(self, mat):
-        d = np.array(mat, dtype=np.float32)
+        d = np.array(mat, dtype=np.float64)
 
         # first filter Rows
         di = np.zeros(shape=d.shape, dtype=np.int32)
@@ -62,7 +62,7 @@ class CorrespondenceAnalysis:
         if (self.ct + self.rt + self.cit + self.rit > 0):
             d = self.filter(mat)
         else:
-            d = np.array(mat, dtype=np.float32)
+            d = np.array(mat, dtype=np.float64)
 
         N = np.sum(d)
         Z = d / N
@@ -145,3 +145,45 @@ class CorrespondenceAnalysis:
         Dr_mHalf = np.diag(np.power(self.r, -0.5))
         self.Fr = np.dot(np.dot(Dr_mHalf, self.P), DS)
 
+    def calcSimilarity(self, F1, F2=None):
+        y,x = F1.shape
+        Fnorm1 = np.zeros(x)
+        for i in range(x):
+            Fnorm1[i] = np.linalg.norm(F1[:,i])
+
+        Fnorm2 = Fnorm1
+
+        if (None == F2):
+            F2 = F1
+        else:
+            y2,x2 = F2.shape
+            Fnorm2 = np.zeros(x2)
+            for i in range(x2):
+                Fnorm2[i] = np.linalg.norm(F2[:,i])
+
+        D = np.outer(Fnorm1, Fnorm2)
+        S = np.dot(np.transpose(F1), F2)
+
+        return (S/D)
+
+    def calcColSimilarities(self, dim=0):
+        F = self.Fc
+        if (dim > 0):
+            F = self.Fc[:, :dim]
+        return self.calcSimilarity(F.T)
+
+    def calcRowSimilarities(self, dim=0):
+        F = self.Fr
+        if (dim > 0):
+            F = self.Fc[:, :dim]
+        return self.calcSimilarity(F.T)
+
+    def calcCrossSimilarities(self, dim=0):
+        F1 = self.Fr
+        F2 = self.Fc
+
+        if (dim > 0):
+            F1 = self.Fr[:, :dim]
+            F2 = self.Fc[:, :dim]
+
+        return self.calcSimilarity(F1.T, F2.T)
