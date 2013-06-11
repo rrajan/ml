@@ -74,14 +74,14 @@ class NaiveBayes:
                     if (mat[i,j] in kv_1):
                         kv_1[mat[i,j]] += 1
                     else:
-                        kv_1[mat[i,j]] = L
+                        kv_1[mat[i,j]] = L + 1
                 else:
                     if (mat[i,j] in kv_0):
                         kv_0[mat[i,j]] += 1
                     else:
-                        kv_0[mat[i,j]] = L
-            kv_1[self.default] = L
-            kv_0[self.default] = L
+                        kv_0[mat[i,j]] = L + 1
+            kv_1[self.default] = L # + np.mean(kv_1.values()) # np.mean
+            kv_0[self.default] = L # + np.mean(kv_0.values()) # np.mean
             x_y1_dict[X[j]] = kv_1
             x_y0_dict[X[j]] = kv_0
             # since idx 0 is Y
