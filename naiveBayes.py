@@ -12,6 +12,9 @@ class NaiveBayes:
         self.model={}
         self.predictions=0
         self.metrics={}
+        # for debugging
+        self.def0=0
+        self.def1=0
 
     def getTable(self, fname, c_offset=0, dtype=types.IntType):
         f = open(fname, 'r')
@@ -38,10 +41,11 @@ class NaiveBayes:
         self.metrics['tpr'] = tpr
 
     def predict(self, Y, X, mat):
-        self.predictions = 0
         r,c = mat.shape
         p_y = self.model['y1'] # prior
-        pred = np.zeros(r)
+        self.predictions = np.zeros(r)
+        self.def0 = np.zeros(r, dtype=bool)
+        self.def1 = np.zeros(r, dtype=bool)
         for i in range(0,r):
             y1=p_y
             y0=1.0 - p_y
@@ -50,15 +54,15 @@ class NaiveBayes:
                     y1 *= self.model[1][X[j]][mat[i,j]]
                 else:
                     y1 *= self.model[1][X[j]][self.default]
+                    self.def1[i] = True
 
                 if (mat[i,j] in self.model[0][X[j]]):
                     y0 *= self.model[0][X[j]][mat[i,j]]
                 else:
                     y0 *= self.model[0][X[j]][self.default]
+                    self.def0[i] = True
 
-            pred[i] = y1 / (y1 + y0)
-
-        self.predictions = pred
+            self.predictions[i] = y1 / (y1 + y0)
 
     def caliberate(self, Y, X, y, mat, L=1):
         self.model.clear()
@@ -107,5 +111,8 @@ class NaiveBayes:
         self.model['y_name'] = Y
         self.model['x_names'] = X
         self.model['y1'] = np.float64(sum(y)) / np.float64(len(y))
+        self.model[0] = p_x_y0
         self.model[1] = p_x_y1
+        self.model['c0'] = x_y0_dict
+        self.model['c1'] = x_y1_dict
         self.model[0] = p_x_y0
