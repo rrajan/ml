@@ -6,7 +6,7 @@ import types
 from sklearn import metrics
 
 ## This as of now serves only for Binary classification
-## X is treated as a Bernoulli variable (categorical)
+## X is treated as a Bernoulli / Categorical variable
 class NaiveBayes:
 
     def __init__(self):
@@ -14,7 +14,7 @@ class NaiveBayes:
         self.model={}
         self.predictions=0
         self.metrics={}
-        self.dKL = None # Kullback-Lebler
+        self.dKL = None # Kullback-Leibler
         self.dJS = None # Jensen-Shannon
 
     def getTable(self, fname, c_offset=0, dtype=types.IntType):

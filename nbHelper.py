@@ -46,13 +46,34 @@ class NaiveBayesHelper:
 
         Groups all columns of data into all combinations
         """
-
         generator = self.doubs_generator
         if (2 < order):
             generator = self.trips_generator
 
         new_data = []
         m,n = data.shape
-        for indicies in generator(n):
-            new_data.append([hash(tuple(v)) for v in data[:,indicies]])
+        for indices in generator(n):
+            new_data.append([hash(tuple(v)) for v in data[:,indices]])
+        return np.array(new_data).T
+
+    def group_names(self, data, hash=hash, order=2):
+        """
+        numpy.array -> numpy.array
+
+        Groups all columns of data into all combinations
+        """
+        generator = self.doubs_generator
+        if (2 < order):
+            generator = self.trips_generator
+
+        new_data = []
+        m,n = data.shape
+        for indices in generator(n):
+            for i, v in enumerate(data[:,indices]):
+                if (i > 0):
+                    break # hack
+                s = []
+                for r in tuple(v):
+                    s.append(str(r))
+                new_data.append('-'.join(s))
         return np.array(new_data).T
