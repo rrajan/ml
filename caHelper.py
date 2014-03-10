@@ -1,10 +1,13 @@
 import numpy as np
-from env.plot import *
+import matplotlib.pyplot as plt
 
 class CAPlot:
 
     def __init__(self, ca):
         self.ca = ca
+
+    def show(self):
+        plt.show()
 
     def plot(self, pdata, d=2, factors=np.array([0]), r=1, labels=[], title="CA", marker="ro", show=True):
 

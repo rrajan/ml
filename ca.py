@@ -10,7 +10,7 @@ class CorrespondenceAnalysis:
         self.Z          = 0
         self.Chi2Stat   = 0
         self.dof        = 0
-        self.pval       = 1.0
+        self.pval       = 1.0 # => independence or probab of chi2Stat follows Chi2 Distribution
         self.r          = 0
         self.c          = 0
         self.S          = 0
@@ -83,7 +83,7 @@ class CorrespondenceAnalysis:
         self.Z = Z
         Z2 = np.power(Z, 2)
         self.Chi2Stat = np.sum(Z2) * N
-        self.pval = sp.stats.chi2.sf(self.Chi2Stat, self.dof)
+        self.pval = sp.stats.chi2.sf(self.Chi2Stat, self.dof) # survival function i.e 1 - CDF
 
     def analyze(self, mat):
 

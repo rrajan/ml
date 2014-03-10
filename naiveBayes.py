@@ -5,9 +5,10 @@ import numpy as np
 import types
 from sklearn import metrics
 
-## This as of now serves only for Binary classification
 ## X is treated as a Bernoulli / Categorical variable
-class NaiveBayes:
+
+## Binary classification
+class BNB:
 
     def __init__(self):
         self.default = 'DEFAULT'
@@ -58,38 +59,6 @@ class NaiveBayes:
                 self.dKL[i][X[j]] = dkl
             self.dKL[i] = OrderedDict(sorted(self.dKL[i].items(), key=lambda x:-x[1]))
 
-    '''
-    def compareDiv(self):
-        """
-        measure kullback_leibler divergence between labels
-        """
-        self.dKL = {}
-        X = self.model['x_names']
-        for j in range(len(self.model[0])):
-
-            #k_i = list(set(self.model[0][X[j]].keys()) & set(self.model[1][X[j]].keys()))
-            k_i = list(set(self.model[0][X[j]].keys()) | set(self.model[1][X[j]].keys()))
-
-            # TODO normalize probs to 1.0
-            n = len(k_i)
-            rat = np.zeros(n) + 1.0 / self.model[1][X[j]][self.default]
-            ref = np.zeros(n) + self.model[0][X[j]][self.default]
-
-            for i, k in enumerate(k_i):
-                if (k in self.model[0][X[j]]):
-                    ref[i] = self.model[0][X[j]][k]
-                if (k in self.model[1][X[j]]):
-                    rat[i] = ref[i] / self.model[1][X[j]][k]
-                else:
-                    rat[i] *= ref[i] # == default
-
-            dkl = np.dot(np.log(rat), ref)
-            self.dKL[X[j]] = dkl
-
-        #self.dKL = sorted(self.dKL.iteritems(), key=lambda item: -item[1])
-        #self.dKL = sorted(self.dKL, key=self.dKL.get, reverse=True)
-        self.dKL = OrderedDict(sorted(self.dKL.items(), key=lambda x:-x[1]))
-    '''
     def compareDiv(self, X=None):
         """
         measure Shannon-Jensen divergence between labels
@@ -208,4 +177,5 @@ class NaiveBayes:
         self.model[1] = p_x_y1
         self.model['c0'] = x_y0_dict
         self.model['c1'] = x_y1_dict
+        ### TODO delete the following ?
         self.model[0] = p_x_y0
