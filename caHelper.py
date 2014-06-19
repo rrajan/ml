@@ -9,7 +9,7 @@ class CAPlot:
     def show(self):
         plt.show()
 
-    def plot(self, pdata, d=2, factors=np.array([0]), r=1, labels=[], title="CA", marker="ro", show=True):
+    def plot(self, pdata, d=2, factors=np.array([0]), r=1, labels=[], title="CA", marker="ro", pinds=None, show=True):
 
         for i,f in enumerate(factors):
 
@@ -19,6 +19,10 @@ class CAPlot:
                 y = pdata[:,(f+1)]
             else:
                 y = pdata[:,f]
+
+            if (pinds != None):
+                x = x[pinds]
+                y = y[pinds]
 
             plt.figure(i+1)
             plt.plot(x, y, marker)
@@ -86,11 +90,11 @@ class CAPlot:
         for i in range(len(nc)):
             plt.annotate(`nc[i]`, xy=(nx[i], ny[i]))
 
-    def plotCols(self, d=2, factors=np.array([0]), r=1, labels=[], title="Cols", marker = "ro", show=True):
-        return self.plot(self.ca.Fc, d, factors, r, labels, title, marker, show)
+    def plotCols(self, d=2, factors=np.array([0]), r=1, labels=[], title="Cols", marker = "ro", pinds=None, show=True):
+        return self.plot(self.ca.Fc, d, factors, r, labels, title, marker, pinds, show)
 
-    def plotRows(self, d=2, factors=np.array([0]), r=1, labels=[], title="Rows", marker = "go", show=True):
-        return self.plot(self.ca.Fr, d, factors, r, labels, title, marker, show)
+    def plotRows(self, d=2, factors=np.array([0]), r=1, labels=[], title="Rows", marker = "go", pinds=None, show=True):
+        return self.plot(self.ca.Fr, d, factors, r, labels, title, marker, pinds, show)
 
     def plotHistCols(self, bins=50, wf=1.0, title="ColumnScores"):
         self.plotHist(self.ca.c * self.ca.N, bins, wf, title)
