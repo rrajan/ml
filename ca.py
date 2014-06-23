@@ -131,7 +131,7 @@ class CorrespondenceAnalysis:
 
         self.Q = 0
         _M = np.transpose(M)
-        M_M = np.dot(M_,M)
+        M_M = np.dot(M,_M)
         E, P = np.linalg.eig(M_M) # not sorted?
         ord_inds = np.argsort(-E) # rev sort
         self.E = E[ord_inds]
