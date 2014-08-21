@@ -15,9 +15,9 @@ class MarkovTMat:
         prevS = None
         if (group is not None):
             prevG = None
-            for i in df.index:
-                curG = df.loc[i, group]
-                curSt = df.loc[i, key]
+            for d in df[[group, key]].values:
+                curG = d[0]
+                curSt = d[1]
                 if (prevG == curG): mat.loc[prevS, curSt] += 1
                 prevS = curSt
                 prevG = curG
