@@ -7,18 +7,20 @@ class MarkovTMat:
 
     # expect sorted df by group AND other values
     def build(self, df, key, group=None, L=1):
-        states = df[key].unique()
+        states = list(df[key].unique())
         states.sort()
+        states.append('_UNKNOWN_')
         nStates = len(states)
         mat = pd.DataFrame(np.zeros(shape=(nStates, nStates)), columns=states, index=states) + L
 
-        prevS = None
+        prevS = df[key].iloc[0]
         if (group is not None):
-            prevG = None
-            for d in df[[group, key]].values:
+            prevG = df[group].iloc[0]
+            for d in df[[group, key]].values[1:,]:
                 curG = d[0]
                 curSt = d[1]
                 if (prevG == curG): mat.loc[prevS, curSt] += 1
+                else: mat.loc[prevS, states[-1]] += 1
                 prevS = curSt
                 prevG = curG
         else:
